@@ -1,0 +1,23 @@
+# Build output
+/bin/
+/dist/
+*.exe
+*.test
+*.out
+coverage.*
+
+# Local snapshots and outputs can contain sensitive authorization data
+*.snapshot.json
+/snapshots/
+/out/
+
+# Editors and OS
+.idea/
+.vscode/
+*.swp
+.DS_Store
+Thumbs.db
+
+# Environment files must never be committed
+.env
+.env.*
