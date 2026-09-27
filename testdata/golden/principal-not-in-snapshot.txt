@@ -1,0 +1,41 @@
+cloud-why explain (offline: provider contacted: no, network used: no)
+
+Question
+  provider   aws
+  principal  arn:aws:iam::111122223333:role/other
+  action     s3:GetObject
+  resource   arn:aws:s3:::example-bucket/reports/q3.csv
+Evaluation scope: AWS identity-based policies only
+
+Verdict: UNKNOWN
+  Missing or unsupported information could change the result within the evaluated scope. See the gaps.
+
+Evidence
+  (none)
+
+Gaps
+  aws.identity  MISSING_DATA  PRINCIPAL_NOT_IN_SNAPSHOT  (AFFECTS VERDICT)
+     Principal arn:aws:iam::111122223333:role/other is not in the snapshot's UserDetailList or RoleDetailList.
+  aws.resource_policy  OUT_OF_SCOPE  LAYER_NOT_IN_CW001  (does not affect verdict)
+     Resource-based policies are not evaluated in CW-001.
+  aws.permissions_boundary  OUT_OF_SCOPE  LAYER_NOT_IN_CW001  (does not affect verdict)
+     Permissions boundaries are not evaluated in CW-001.
+  aws.scp  OUT_OF_SCOPE  LAYER_NOT_IN_CW001  (does not affect verdict)
+     Service control policies are not evaluated in CW-001.
+  aws.rcp  OUT_OF_SCOPE  LAYER_NOT_IN_CW001  (does not affect verdict)
+     Resource control policies are not evaluated in CW-001.
+  aws.session_policy  OUT_OF_SCOPE  LAYER_NOT_IN_CW001  (does not affect verdict)
+     Session policies are not evaluated in CW-001.
+
+Provenance
+  input               ../../testdata/aws/role-app.json
+  sha256              1966c10d0fecb025988538bb06768e8c9902e1daf409430e446e27f8d61bb81c
+  bytes               2383
+  format              AWS GetAccountAuthorizationDetails response (user-supplied)
+  truncated           no
+  collected at        unknown
+  account             111122223333
+  provider contacted  no
+  network used        no
+  engine              aws.identity/cw-001
+  tool version        dev

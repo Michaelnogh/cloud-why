@@ -1,0 +1,67 @@
+{
+  "UserDetailList": [
+    {
+      "Path": "/",
+      "UserName": "alice",
+      "UserId": "AIDAEXAMPLEEXAMPLE1",
+      "Arn": "arn:aws:iam::111122223333:user/alice",
+      "CreateDate": "2026-01-01T00:00:00Z",
+      "UserPolicyList": [
+        {
+          "PolicyName": "put-with-mfa",
+          "PolicyDocument": {
+            "Version": "2012-10-17",
+            "Statement": [
+              {
+                "Sid": "PutWithMFA",
+                "Effect": "Allow",
+                "Action": "s3:PutObject",
+                "Resource": "arn:aws:s3:::example-bucket/uploads/*",
+                "Condition": {
+                  "Bool": {
+                    "aws:MultiFactorAuthPresent": "true"
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "GroupList": [
+        "developers"
+      ],
+      "AttachedManagedPolicies": [],
+      "PermissionsBoundary": {
+        "PermissionsBoundaryType": "Policy",
+        "PermissionsBoundaryArn": "arn:aws:iam::111122223333:policy/boundary"
+      },
+      "Tags": []
+    }
+  ],
+  "GroupDetailList": [
+    {
+      "Path": "/",
+      "GroupName": "developers",
+      "GroupId": "AGPAEXAMPLEEXAMPLE1",
+      "Arn": "arn:aws:iam::111122223333:group/developers",
+      "CreateDate": "2026-01-01T00:00:00Z",
+      "GroupPolicyList": [
+        {
+          "PolicyName": "deny-iam",
+          "PolicyDocument": {
+            "Version": "2012-10-17",
+            "Statement": {
+              "Effect": "Deny",
+              "Action": "iam:*",
+              "Resource": "*"
+            }
+          }
+        }
+      ],
+      "AttachedManagedPolicies": []
+    }
+  ],
+  "RoleDetailList": [],
+  "Policies": [],
+  "IsTruncated": false
+}

@@ -1,0 +1,14 @@
+{
+  "RoleDetailList": [
+    {
+      "Arn": "arn:aws:iam::111122223333:role/app",
+      "RoleName": "app",
+      "RolePolicyList": [
+        {
+          "PolicyName": "broken",
+          "PolicyDocument": "%7B%22Version%22%3A%222012-10-17%2"
+        }
+      ]
+    }
+  ]
+}

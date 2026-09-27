@@ -1,0 +1,55 @@
+{
+  "UserDetailList": [],
+  "GroupDetailList": [],
+  "RoleDetailList": [
+    {
+      "Path": "/",
+      "RoleName": "app",
+      "RoleId": "AROAEXAMPLEEXAMPLE1",
+      "Arn": "arn:aws:iam::111122223333:role/app",
+      "CreateDate": "2026-01-01T00:00:00Z",
+      "AssumeRolePolicyDocument": "%7B%22Version%22%3A%222012-10-17%22%2C%22Statement%22%3A%5B%7B%22Effect%22%3A%22Allow%22%2C%22Principal%22%3A%7B%22Service%22%3A%22ec2.amazonaws.com%22%7D%2C%22Action%22%3A%22sts%3AAssumeRole%22%7D%5D%7D",
+      "InstanceProfileList": [],
+      "RolePolicyList": [
+        {
+          "PolicyName": "read-reports",
+          "PolicyDocument": "%7B%22Version%22%3A%222012-10-17%22%2C%22Statement%22%3A%5B%7B%22Sid%22%3A%22ListBuckets%22%2C%22Effect%22%3A%22Allow%22%2C%22Action%22%3A%22s3%3AListAllMyBuckets%22%2C%22Resource%22%3A%22%2A%22%7D%2C%7B%22Sid%22%3A%22ReadReports%22%2C%22Effect%22%3A%22Allow%22%2C%22Action%22%3A%5B%22s3%3AGet%2A%22%2C%22s3%3AList%2A%22%5D%2C%22Resource%22%3A%5B%22arn%3Aaws%3As3%3A%3A%3Aexample-bucket%22%2C%22arn%3Aaws%3As3%3A%3A%3Aexample-bucket%2F%2A%22%5D%7D%5D%7D"
+        }
+      ],
+      "AttachedManagedPolicies": [
+        {
+          "PolicyName": "deny-secret",
+          "PolicyArn": "arn:aws:iam::111122223333:policy/deny-secret"
+        }
+      ],
+      "Tags": [],
+      "RoleLastUsed": {}
+    }
+  ],
+  "Policies": [
+    {
+      "PolicyName": "deny-secret",
+      "PolicyId": "ANPAEXAMPLEEXAMPLE1",
+      "Arn": "arn:aws:iam::111122223333:policy/deny-secret",
+      "Path": "/",
+      "DefaultVersionId": "v2",
+      "AttachmentCount": 1,
+      "IsAttachable": true,
+      "PolicyVersionList": [
+        {
+          "Document": "%7B%22Version%22%3A%222012-10-17%22%2C%22Statement%22%3A%5B%7B%22Effect%22%3A%22Deny%22%2C%22Action%22%3A%22%2A%22%2C%22Resource%22%3A%22%2A%22%7D%5D%7D",
+          "VersionId": "v1",
+          "IsDefaultVersion": false,
+          "CreateDate": "2026-01-01T00:00:00Z"
+        },
+        {
+          "Document": "%7B%22Version%22%3A%222012-10-17%22%2C%22Statement%22%3A%5B%7B%22Sid%22%3A%22DenySecret%22%2C%22Effect%22%3A%22Deny%22%2C%22Action%22%3A%22s3%3A%2A%22%2C%22Resource%22%3A%22arn%3Aaws%3As3%3A%3A%3Aexample-bucket%2Fsecret%2F%2A%22%7D%5D%7D",
+          "VersionId": "v2",
+          "IsDefaultVersion": true,
+          "CreateDate": "2026-02-01T00:00:00Z"
+        }
+      ]
+    }
+  ],
+  "IsTruncated": false
+}

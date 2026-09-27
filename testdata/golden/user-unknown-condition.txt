@@ -1,0 +1,54 @@
+cloud-why explain (offline: provider contacted: no, network used: no)
+
+Question
+  provider   aws
+  principal  arn:aws:iam::111122223333:user/alice
+  action     s3:PutObject
+  resource   arn:aws:s3:::example-bucket/uploads/a.txt
+Evaluation scope: AWS identity-based policies only
+
+Verdict: UNKNOWN
+  Missing or unsupported information could change the result within the evaluated scope. See the gaps.
+
+Evidence
+  1. NOT_EVALUATED ALLOW  aws.user_inline_policy "put-with-mfa" /Statement/0  [decisive]
+     source   arn:aws:iam::111122223333:user/alice
+     label    PutWithMFA
+     reasons  ACTION_MATCHED, RESOURCE_MATCHED, CONDITION_NOT_EVALUATED
+     - action s3:PutObject matches Action pattern "s3:PutObject"
+     - resource arn:aws:s3:::example-bucket/uploads/a.txt matches Resource pattern "arn:aws:s3:::example-bucket/uploads/*"
+     - Condition element present; CW-001 does not evaluate conditions
+  2. NOT_MATCHED DENY  aws.group_inline_policy "deny-iam" /Statement
+     source   arn:aws:iam::111122223333:group/developers
+     via      arn:aws:iam::111122223333:group/developers
+     reasons  ACTION_NOT_MATCHED, RESOURCE_NOT_CHECKED, CONDITION_NOT_CHECKED
+     - action s3:PutObject matches no Action pattern ["iam:*"]
+     - resource not checked: the action element does not cover the action
+     - condition not checked
+
+Gaps
+  aws.identity  UNSUPPORTED  CONDITION_NOT_EVALUATED  (AFFECTS VERDICT)
+     Statement /Statement/0 of aws.user_inline_policy "put-with-mfa" has a Condition element; CW-001 does not evaluate conditions.
+  aws.resource_policy  OUT_OF_SCOPE  LAYER_NOT_IN_CW001  (does not affect verdict)
+     Resource-based policies are not evaluated in CW-001.
+  aws.permissions_boundary  OUT_OF_SCOPE  LAYER_NOT_IN_CW001  (does not affect verdict)
+     Permissions boundaries are not evaluated in CW-001. The principal has a permissions boundary attached: arn:aws:iam::111122223333:policy/boundary.
+  aws.scp  OUT_OF_SCOPE  LAYER_NOT_IN_CW001  (does not affect verdict)
+     Service control policies are not evaluated in CW-001.
+  aws.rcp  OUT_OF_SCOPE  LAYER_NOT_IN_CW001  (does not affect verdict)
+     Resource control policies are not evaluated in CW-001.
+  aws.session_policy  OUT_OF_SCOPE  LAYER_NOT_IN_CW001  (does not affect verdict)
+     Session policies are not evaluated in CW-001.
+
+Provenance
+  input               ../../testdata/aws/user-alice.json
+  sha256              fe8e8e2ab974bc84b57ab68759ca6de6168d177070208b812a04da3c7c99b991
+  bytes               1720
+  format              AWS GetAccountAuthorizationDetails response (user-supplied)
+  truncated           no
+  collected at        unknown
+  account             111122223333
+  provider contacted  no
+  network used        no
+  engine              aws.identity/cw-001
+  tool version        dev

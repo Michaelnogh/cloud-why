@@ -1,0 +1,53 @@
+cloud-why explain (offline: provider contacted: no, network used: no)
+
+Question
+  provider   aws
+  principal  arn:aws:iam::111122223333:user/alice
+  action     iam:CreateUser
+  resource   arn:aws:iam::111122223333:user/bob
+Evaluation scope: AWS identity-based policies only
+
+Verdict: DENIED_EXPLICIT
+  An applicable explicit deny was found within the evaluated scope.
+
+Evidence
+  1. NOT_MATCHED ALLOW  aws.user_inline_policy "put-with-mfa" /Statement/0
+     source   arn:aws:iam::111122223333:user/alice
+     label    PutWithMFA
+     reasons  ACTION_NOT_MATCHED, RESOURCE_NOT_CHECKED, CONDITION_NOT_CHECKED
+     - action iam:CreateUser matches no Action pattern ["s3:PutObject"]
+     - resource not checked: the action element does not cover the action
+     - condition not checked
+  2. MATCHED DENY  aws.group_inline_policy "deny-iam" /Statement  [decisive]
+     source   arn:aws:iam::111122223333:group/developers
+     via      arn:aws:iam::111122223333:group/developers
+     reasons  ACTION_MATCHED, RESOURCE_MATCHED, CONDITION_ABSENT
+     - action iam:CreateUser matches Action pattern "iam:*"
+     - resource arn:aws:iam::111122223333:user/bob matches Resource pattern "*"
+     - no Condition element
+     - An applicable explicit Deny overrides any Allow. This deny is decisive for the final AWS authorization decision.
+
+Gaps
+  aws.resource_policy  OUT_OF_SCOPE  LAYER_NOT_IN_CW001  (does not affect verdict)
+     Resource-based policies are not evaluated in CW-001.
+  aws.permissions_boundary  OUT_OF_SCOPE  LAYER_NOT_IN_CW001  (does not affect verdict)
+     Permissions boundaries are not evaluated in CW-001. The principal has a permissions boundary attached: arn:aws:iam::111122223333:policy/boundary.
+  aws.scp  OUT_OF_SCOPE  LAYER_NOT_IN_CW001  (does not affect verdict)
+     Service control policies are not evaluated in CW-001.
+  aws.rcp  OUT_OF_SCOPE  LAYER_NOT_IN_CW001  (does not affect verdict)
+     Resource control policies are not evaluated in CW-001.
+  aws.session_policy  OUT_OF_SCOPE  LAYER_NOT_IN_CW001  (does not affect verdict)
+     Session policies are not evaluated in CW-001.
+
+Provenance
+  input               ../../testdata/aws/user-alice.json
+  sha256              fe8e8e2ab974bc84b57ab68759ca6de6168d177070208b812a04da3c7c99b991
+  bytes               1720
+  format              AWS GetAccountAuthorizationDetails response (user-supplied)
+  truncated           no
+  collected at        unknown
+  account             111122223333
+  provider contacted  no
+  network used        no
+  engine              aws.identity/cw-001
+  tool version        dev

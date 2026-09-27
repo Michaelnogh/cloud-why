@@ -1,0 +1,140 @@
+{
+  "schema": "cloud-why.investigation.v0",
+  "question": {
+    "provider": "aws",
+    "principal": "arn:aws:iam::111122223333:user/alice",
+    "action": "iam:CreateUser",
+    "resource": "arn:aws:iam::111122223333:user/bob",
+    "context": {},
+    "scope": {
+      "layers": [
+        "aws.identity"
+      ],
+      "label": "AWS identity-based policies only"
+    }
+  },
+  "verdict": "DENIED_EXPLICIT",
+  "evidence": [
+    {
+      "step": 1,
+      "layer": "aws.identity",
+      "source": {
+        "kind": "aws.user_inline_policy",
+        "id": "arn:aws:iam::111122223333:user/alice",
+        "name": "put-with-mfa",
+        "location": "/Statement/0",
+        "label": "PutWithMFA"
+      },
+      "effect": "ALLOW",
+      "outcome": "NOT_MATCHED",
+      "decisive": false,
+      "reasons": [
+        "ACTION_NOT_MATCHED",
+        "RESOURCE_NOT_CHECKED",
+        "CONDITION_NOT_CHECKED"
+      ],
+      "explanation": [
+        "action iam:CreateUser matches no Action pattern [\"s3:PutObject\"]",
+        "resource not checked: the action element does not cover the action",
+        "condition not checked"
+      ],
+      "detail": {
+        "aws": {
+          "policy_version_element": "2012-10-17",
+          "document_encoding": "json-object",
+          "action_element": "Action",
+          "resource_element": "Resource",
+          "condition": "not-checked"
+        }
+      }
+    },
+    {
+      "step": 2,
+      "layer": "aws.identity",
+      "source": {
+        "kind": "aws.group_inline_policy",
+        "id": "arn:aws:iam::111122223333:group/developers",
+        "name": "deny-iam",
+        "via": "arn:aws:iam::111122223333:group/developers",
+        "location": "/Statement"
+      },
+      "effect": "DENY",
+      "outcome": "MATCHED",
+      "decisive": true,
+      "reasons": [
+        "ACTION_MATCHED",
+        "RESOURCE_MATCHED",
+        "CONDITION_ABSENT"
+      ],
+      "explanation": [
+        "action iam:CreateUser matches Action pattern \"iam:*\"",
+        "resource arn:aws:iam::111122223333:user/bob matches Resource pattern \"*\"",
+        "no Condition element",
+        "An applicable explicit Deny overrides any Allow. This deny is decisive for the final AWS authorization decision."
+      ],
+      "detail": {
+        "aws": {
+          "policy_version_element": "2012-10-17",
+          "document_encoding": "json-object",
+          "action_element": "Action",
+          "action_matched_pattern": "iam:*",
+          "resource_element": "Resource",
+          "resource_matched_pattern": "*",
+          "condition": "absent"
+        }
+      }
+    }
+  ],
+  "gaps": [
+    {
+      "layer": "aws.resource_policy",
+      "reason": "OUT_OF_SCOPE",
+      "code": "LAYER_NOT_IN_CW001",
+      "detail": "Resource-based policies are not evaluated in CW-001.",
+      "affects_verdict": false
+    },
+    {
+      "layer": "aws.permissions_boundary",
+      "reason": "OUT_OF_SCOPE",
+      "code": "LAYER_NOT_IN_CW001",
+      "detail": "Permissions boundaries are not evaluated in CW-001. The principal has a permissions boundary attached: arn:aws:iam::111122223333:policy/boundary.",
+      "affects_verdict": false
+    },
+    {
+      "layer": "aws.scp",
+      "reason": "OUT_OF_SCOPE",
+      "code": "LAYER_NOT_IN_CW001",
+      "detail": "Service control policies are not evaluated in CW-001.",
+      "affects_verdict": false
+    },
+    {
+      "layer": "aws.rcp",
+      "reason": "OUT_OF_SCOPE",
+      "code": "LAYER_NOT_IN_CW001",
+      "detail": "Resource control policies are not evaluated in CW-001.",
+      "affects_verdict": false
+    },
+    {
+      "layer": "aws.session_policy",
+      "reason": "OUT_OF_SCOPE",
+      "code": "LAYER_NOT_IN_CW001",
+      "detail": "Session policies are not evaluated in CW-001.",
+      "affects_verdict": false
+    }
+  ],
+  "provenance": {
+    "input": {
+      "path": "../../testdata/aws/user-alice.json",
+      "sha256": "fe8e8e2ab974bc84b57ab68759ca6de6168d177070208b812a04da3c7c99b991",
+      "bytes": 1720,
+      "format": "AWS GetAccountAuthorizationDetails response (user-supplied)",
+      "is_truncated": false
+    },
+    "collected_at": null,
+    "account": "111122223333",
+    "provider_contacted": false,
+    "network_used": false,
+    "tool_version": "dev",
+    "engine": "aws.identity/cw-001"
+  }
+}

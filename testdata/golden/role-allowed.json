@@ -1,0 +1,174 @@
+{
+  "schema": "cloud-why.investigation.v0",
+  "question": {
+    "provider": "aws",
+    "principal": "arn:aws:iam::111122223333:role/app",
+    "action": "s3:GetObject",
+    "resource": "arn:aws:s3:::example-bucket/reports/q3.csv",
+    "context": {},
+    "scope": {
+      "layers": [
+        "aws.identity"
+      ],
+      "label": "AWS identity-based policies only"
+    }
+  },
+  "verdict": "ALLOWED",
+  "evidence": [
+    {
+      "step": 1,
+      "layer": "aws.identity",
+      "source": {
+        "kind": "aws.role_inline_policy",
+        "id": "arn:aws:iam::111122223333:role/app",
+        "name": "read-reports",
+        "location": "/Statement/0",
+        "label": "ListBuckets"
+      },
+      "effect": "ALLOW",
+      "outcome": "NOT_MATCHED",
+      "decisive": false,
+      "reasons": [
+        "ACTION_NOT_MATCHED",
+        "RESOURCE_NOT_CHECKED",
+        "CONDITION_NOT_CHECKED"
+      ],
+      "explanation": [
+        "action s3:GetObject matches no Action pattern [\"s3:ListAllMyBuckets\"]",
+        "resource not checked: the action element does not cover the action",
+        "condition not checked"
+      ],
+      "detail": {
+        "aws": {
+          "policy_version_element": "2012-10-17",
+          "document_encoding": "url-encoded",
+          "action_element": "Action",
+          "resource_element": "Resource",
+          "condition": "not-checked"
+        }
+      }
+    },
+    {
+      "step": 2,
+      "layer": "aws.identity",
+      "source": {
+        "kind": "aws.role_inline_policy",
+        "id": "arn:aws:iam::111122223333:role/app",
+        "name": "read-reports",
+        "location": "/Statement/1",
+        "label": "ReadReports"
+      },
+      "effect": "ALLOW",
+      "outcome": "MATCHED",
+      "decisive": true,
+      "reasons": [
+        "ACTION_MATCHED",
+        "RESOURCE_MATCHED",
+        "CONDITION_ABSENT"
+      ],
+      "explanation": [
+        "action s3:GetObject matches Action pattern \"s3:Get*\"",
+        "resource arn:aws:s3:::example-bucket/reports/q3.csv matches Resource pattern \"arn:aws:s3:::example-bucket/*\"",
+        "no Condition element"
+      ],
+      "detail": {
+        "aws": {
+          "policy_version_element": "2012-10-17",
+          "document_encoding": "url-encoded",
+          "action_element": "Action",
+          "action_matched_pattern": "s3:Get*",
+          "resource_element": "Resource",
+          "resource_matched_pattern": "arn:aws:s3:::example-bucket/*",
+          "condition": "absent"
+        }
+      }
+    },
+    {
+      "step": 3,
+      "layer": "aws.identity",
+      "source": {
+        "kind": "aws.role_managed_policy",
+        "id": "arn:aws:iam::111122223333:policy/deny-secret",
+        "name": "deny-secret",
+        "version": "v2",
+        "location": "/Statement/0",
+        "label": "DenySecret"
+      },
+      "effect": "DENY",
+      "outcome": "NOT_MATCHED",
+      "decisive": false,
+      "reasons": [
+        "ACTION_MATCHED",
+        "RESOURCE_NOT_MATCHED",
+        "CONDITION_NOT_CHECKED"
+      ],
+      "explanation": [
+        "action s3:GetObject matches Action pattern \"s3:*\"",
+        "resource arn:aws:s3:::example-bucket/reports/q3.csv matches no Resource pattern [\"arn:aws:s3:::example-bucket/secret/*\"]",
+        "condition not checked"
+      ],
+      "detail": {
+        "aws": {
+          "policy_version_element": "2012-10-17",
+          "document_encoding": "url-encoded",
+          "action_element": "Action",
+          "action_matched_pattern": "s3:*",
+          "resource_element": "Resource",
+          "condition": "not-checked"
+        }
+      }
+    }
+  ],
+  "gaps": [
+    {
+      "layer": "aws.resource_policy",
+      "reason": "OUT_OF_SCOPE",
+      "code": "LAYER_NOT_IN_CW001",
+      "detail": "Resource-based policies are not evaluated in CW-001.",
+      "affects_verdict": false
+    },
+    {
+      "layer": "aws.permissions_boundary",
+      "reason": "OUT_OF_SCOPE",
+      "code": "LAYER_NOT_IN_CW001",
+      "detail": "Permissions boundaries are not evaluated in CW-001.",
+      "affects_verdict": false
+    },
+    {
+      "layer": "aws.scp",
+      "reason": "OUT_OF_SCOPE",
+      "code": "LAYER_NOT_IN_CW001",
+      "detail": "Service control policies are not evaluated in CW-001.",
+      "affects_verdict": false
+    },
+    {
+      "layer": "aws.rcp",
+      "reason": "OUT_OF_SCOPE",
+      "code": "LAYER_NOT_IN_CW001",
+      "detail": "Resource control policies are not evaluated in CW-001.",
+      "affects_verdict": false
+    },
+    {
+      "layer": "aws.session_policy",
+      "reason": "OUT_OF_SCOPE",
+      "code": "LAYER_NOT_IN_CW001",
+      "detail": "Session policies are not evaluated in CW-001.",
+      "affects_verdict": false
+    }
+  ],
+  "provenance": {
+    "input": {
+      "path": "../../testdata/aws/role-app.json",
+      "sha256": "1966c10d0fecb025988538bb06768e8c9902e1daf409430e446e27f8d61bb81c",
+      "bytes": 2383,
+      "format": "AWS GetAccountAuthorizationDetails response (user-supplied)",
+      "is_truncated": false
+    },
+    "collected_at": null,
+    "account": "111122223333",
+    "provider_contacted": false,
+    "network_used": false,
+    "tool_version": "dev",
+    "engine": "aws.identity/cw-001"
+  }
+}
